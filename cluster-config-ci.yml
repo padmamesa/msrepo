@@ -13,7 +13,7 @@ trigger:
 # ------------------------------------------------------------------
 variables:
 
-  Copyright: 'Siemens Healthcare GmbH 2021'
+  Copyright: 'CompanyGmbH'
   SourceBranchName: $(echo '$(Build.SourceBranch)' | sed 's/refs\/heads\///g')
 
 #--------------------
