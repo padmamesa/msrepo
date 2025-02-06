@@ -1,0 +1,79 @@
+#-------------------------------------------------------------------
+# CI build for cluster config
+# ------------------------------------------------------------------
+
+#------------------------------
+# Triggers
+# -----------------------------
+trigger:
+- master
+
+# ------------------------------------------------------------------
+# Variables 
+# ------------------------------------------------------------------
+variables:
+
+  Copyright: 'Siemens Healthcare GmbH 2021'
+  SourceBranchName: $(echo '$(Build.SourceBranch)' | sed 's/refs\/heads\///g')
+
+#--------------------
+# Build Number Format
+#--------------------
+name: $(majorVersion).$(minorVersion).$(year:yy)$(date:MM).$(date:dd)$(rev:rr)
+
+# ------------------------------------------------------------------
+# Agent Pools
+# ------------------------------------------------------------------
+jobs:
+- job: BuildAndPublish
+  pool:
+    name: DAF Pool
+
+  steps:
+  - task: ArchiveFiles@2
+    displayName: 'Archive'
+    inputs:
+      rootFolderOrFile: '.'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.DefinitionName)-$(Build.BuildNumber).zip'
+      replaceExistingArchive: true
+
+  - task: Shell++@0
+    displayName: Generate SHA
+    inputs:
+      type: 'InlineScript'
+      script: 'sha256sum $(Build.DefinitionName)-$(Build.BuildNumber).zip > $(Build.DefinitionName)-$(Build.BuildNumber).zip.sha256'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: Artefact'
+    inputs:
+      PathtoPublish: '$(Build.DefinitionName)-$(Build.BuildNumber).zip'
+      ArtifactName: Artefact
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: SHA'
+    inputs:
+      PathtoPublish: '$(Build.DefinitionName)-$(Build.BuildNumber).zip.sha256'
+      ArtifactName: Artefact
+
+- job: RunCredentialScanner
+  dependsOn: BuildAndPublish
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+  pool:
+    name: Azure Pipelines
+    vmImage: windows-latest
+
+  steps:
+  - task: CredScan@2
+    displayName: Run Credential Scanner
+    inputs:
+      toolMajorVersion: 'V1'
+      outputFormat: 'csv'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Results of Credential Scanner'
+    inputs:
+      PathtoPublish: '$(Agent.BuildDirectory)/_sdt/logs'
+      ArtifactName: CredentialScanner

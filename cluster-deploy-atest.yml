@@ -1,0 +1,109 @@
+parameters:
+  - name: testGroup
+    type: string
+  - name: displayName
+    type: string
+  - name: filterCondition
+    type: string
+  - name: environment
+    type: string
+  - name: azureSubscription
+    type: string
+
+steps:
+
+- download: Cluster-CI
+  artifact: Artefact
+  displayName: "Download Cluster-CI Artefact"
+
+- task: AzureCLI@2
+  displayName: '${{ parameters.displayName }}'
+  condition: succeededOrFailed()
+  inputs:
+    azureSubscription: '${{ parameters.azureSubscription }}'
+    scriptType: bash
+    failOnStderr: false
+    scriptLocation: inlineScript
+    inlineScript: |
+        sleep 30
+        export ClientConfiguration__IdentityProvider=$(ClientConfiguration__IdentityProvider)
+        export ClientConfiguration__Clients__CT__ClientId=$(ClientConfiguration__Clients__CT__ClientId)
+        export ClientConfiguration__Clients__CT__ClientSecret=$(ClientConfiguration__Clients__CT__ClientSecret)
+        export ClientConfiguration__Clients__CT__Resource=$(ClientConfiguration__Clients__CT__Resource)
+        export ClientConfiguration__Clients__TPUSAGE__ClientId=$(ClientConfiguration__Clients__TPUSAGE__ClientId)
+        export ClientConfiguration__Clients__TPUSAGE__ClientSecret=$(ClientConfiguration__Clients__TPUSAGE__ClientSecret)
+        export ClientConfiguration__Clients__TPUSAGE__Resource=$(ClientConfiguration__Clients__TPUSAGE__Resource)
+        export ClientConfiguration__Clients__XP__ClientId=$(ClientConfiguration__Clients__XP__ClientId)
+        export ClientConfiguration__Clients__XP__ClientSecret=$(ClientConfiguration__Clients__XP__ClientSecret)
+        export ClientConfiguration__Clients__XP__Resource=$(ClientConfiguration__Clients__XP__Resource)
+        export ClientConfiguration__Clients__PV__ClientId=$(ClientConfiguration__Clients__PV__ClientId)
+        export ClientConfiguration__Clients__PV__ClientSecret=$(ClientConfiguration__Clients__PV__ClientSecret)
+        export ClientConfiguration__Clients__PV__Resource=$(ClientConfiguration__Clients__PV__Resource)
+        export ClientConfiguration__Clients__ADMIN__ClientId=$(ClientConfiguration__Clients__ADMIN__ClientId)
+        export ClientConfiguration__Clients__ADMIN__ClientSecret=$(ClientConfiguration__Clients__ADMIN__ClientSecret)
+        export ClientConfiguration__Clients__ADMIN__Resource=$(ClientConfiguration__Clients__ADMIN__Resource)
+        export ClientConfiguration__Clients__unknown__ClientId=$(ClientConfiguration__Clients__unknown__ClientId)
+        export ClientConfiguration__Clients__unknown__ClientSecret=$(ClientConfiguration__Clients__unknown__ClientSecret)
+        export ClientConfiguration__Clients__unknown__Resource=$(ClientConfiguration__Clients__unknown__Resource)
+        export ClientConfiguration__Clients__CLUSTERSMOKE__ClientId=$(ClientConfiguration__Clients__CLUSTERSMOKE__ClientId)
+        export ClientConfiguration__Clients__CLUSTERSMOKE__ClientSecret=$(ClientConfiguration__Clients__CLUSTERSMOKE__ClientSecret)
+        export ClientConfiguration__Clients__CLUSTERSMOKE__Resource=$(ClientConfiguration__Clients__CLUSTERSMOKE__Resource)
+        export ServiceUnderTest=$(ServiceUrl)
+        export SERVICEUNDERTEST=$(ServiceUrl)
+        export SubscriptionId=$(SubscriptionId)
+        export Region=$(LOCATION)
+        export ASPNETCORE_ENVIRONMENT=${{ parameters.environment }}
+        export AzureWorkspaces__Routes__RelativeUri=$(AzureWorkspaces__Routes__RelativeUri)
+        export HDInsight__Routes__RelativeUri=$(HDInsight__Routes__RelativeUri)
+        export Databricks__AssertAzureRoutes__CreateWorkspace=$(Databricks__AssertAzureRoutes__CreateWorkspace)
+        export Databricks__AssertAzureRoutes__DeleteWorkspace=$(Databricks__AssertAzureRoutes__DeleteWorkspace)
+        export Databricks__AssertAzureRoutes__GetWorkspace=$(Databricks__AssertAzureRoutes__GetWorkspace)
+        export Databricks__AssertDatabricksRoutes__BaseAddress=$(Databricks__AssertDatabricksRoutes__BaseAddress)
+        export Databricks__AssertDatabricksRoutes__GetStoragesStatus=$(Databricks__AssertDatabricksRoutes__GetStoragesStatus)
+        export Databricks__AssertDatabricksRoutes__GetTableStatus=$(Databricks__AssertDatabricksRoutes__GetTableStatus)
+        export Databricks__AssertDatabricksRoutes__GetSqlEndpoints=$(Databricks__AssertDatabricksRoutes__GetSqlEndpoints)
+        export Databricks__AssertDatabricksRoutes__GetSqlEndpointStatus=$(Databricks__AssertDatabricksRoutes__GetSqlEndpointStatus)
+        export Databricks__AssertDatabricksRoutes__GetPersonalAccessToken=$(Databricks__AssertDatabricksRoutes__GetPersonalAccessToken)
+        export Databricks__AssertDatabricksRoutes__GetJobsList=$(Databricks__AssertDatabricksRoutes__GetJobsList)
+        export Databricks__AssertDatabricksRoutes__GetJobsRunsList=$(Databricks__AssertDatabricksRoutes__GetJobsRunsList)
+        export Databricks__Routes__RelativeUri=$(Databricks__Routes__RelativeUri)
+        export AzureResources__Credentials__ClientId=$(AzureResources__Credentials__ClientId)
+        export AzureResources__Credentials__ClientSecret=$(AzureResources__Credentials__ClientSecret)
+        export Databricks__DefaultMountPoints__0=$(Databricks__DefaultMountPoints__0)
+        export Databricks__DefaultMountPoints__1=$(Databricks__DefaultMountPoints__1)
+        export AzureML__Routes__RelativeUri=$(AzureML__Routes__RelativeUri)
+        export AzureML__AssertMachineLearningRoutes__BaseAddress=$(AzureML__AssertMachineLearningRoutes__BaseAddress)
+        export AzureML__AssertAzureRoutes__CreateAmlWorkspace=$(AzureML__AssertAzureRoutes__CreateAmlWorkspace)
+        export Synapse__Routes__RelativeUri=$(Synapse__Routes__RelativeUri)
+        export Synapse__AssertSynapseRoutes__BaseAddress=$(Synapse__AssertSynapseRoutes__BaseAddress)
+        export Synapse__AssertSynapseRoutes__CreateSynapseWorkspace=$(Synapse__AssertSynapseRoutes__CreateSynapseWorkspace)
+        export Synapse__AssertAzureRoutes__CreateSynapseWorkspace=$(Synapse__AssertAzureRoutes__CreateSynapseWorkspace)
+        export Synapse__SqlServerlessPoolAuthentication__AssertServer=$(Synapse__SqlServerlessPoolAuthentication__AssertServer)
+        export Synapse__SqlServerlessPoolAuthentication__SqlUsername=$(Synapse__SqlServerlessPoolAuthentication__SqlUsername)
+        export Synapse__SqlServerlessPoolAuthentication__SqlPassword=$(Synapse__SqlServerlessPoolAuthentication__SqlPassword)
+        export Authentication__BaseAddress=$(Authentication__BaseAddress)
+        export Authentication__TenantId=$(Authentication__TenantId)
+        export Authentication__ClientId=$(Authentication__ClientId)
+        export Authentication__ClientSecret=$(Authentication__ClientSecret)
+        export Authentication__AzureDatabricksResourceId=$(Authentication__AzureDatabricksResourceId)
+        export AzureManagementBaseUrl=$(AzureManagementBaseUrl)
+        export DatalakeResources__BaseAddress=$(DatalakeResources__BaseAddress)
+        export AzureGraph__BaseAddress=$(AzureGraph__BaseAddress)
+        export DatalakeResources__Credentials__ClientId=$(Authentication__ClientId)
+        export DatalakeResources__Credentials__ClientSecret=$(Authentication__ClientSecret)
+        env
+        dotnet test '$(Pipeline.Workspace)'/Cluster-CI/Artefact/bin/Release/**/syngo.Cloud.DAF.Cluster.Service_aTest.dll ${{ parameters.filterCondition }} --results-directory ${{ parameters.testGroup }} --logger "trx;logfilename=cluster_atest_${{ parameters.testGroup }}.trx" -v n
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Result'
+  inputs:
+    testResultsFormat: VSTest
+    testResultsFiles: '${{ parameters.testGroup }}/*.trx'
+  condition: succeededOrFailed()
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Test Result Artefact'
+  inputs:
+    PathtoPublish: '${{ parameters.testGroup }}'
+    ArtifactName: ${{ parameters.testGroup }}
+  condition: succeededOrFailed()

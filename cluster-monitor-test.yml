@@ -1,0 +1,41 @@
+parameters:
+  - name: displayName
+    type: string
+  - name: environment
+    type: string
+  - name: region
+    type: string
+  - name: podName
+    type: string
+  - name: azureSubscription
+    type: string
+
+steps:
+- task: AzureCLI@2
+  displayName: '${{ parameters.displayName }}'
+  condition: succeededOrFailed()
+  inputs:
+    azureSubscription: '${{ parameters.azureSubscription }}'
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      kubectl -n daf-${{ parameters.region }}-${{  parameters.environment  }} wait --for=condition=Ready --timeout=240s pod/${{  parameters.podName  }}
+      while true
+      do
+         kubectl -n daf-${{ parameters.region }}-${{  parameters.environment  }} logs pod/${{  parameters.podName  }} > grep.txt
+         cat grep.txt | grep 'Results File:\|Passed!\|Failed!'
+         a=$?
+         if [[ $a == 0 ]]
+         then
+          echo "Test run Complete"
+          break;
+         fi
+         sleep 15
+      done
+      kubectl -n daf-${{ parameters.region }}-${{  parameters.environment  }} logs pod/${{  parameters.podName  }}
+      kubectl -n daf-${{ parameters.region }}-${{  parameters.environment  }} logs pod/${{  parameters.podName  }} > grep.txt
+      rm -r ./TestResults/daf-${{ parameters.region }}-${{parameters.environment}}/${{ parameters.podName }}/*
+      kubectl cp -n daf-${{ parameters.region }}-${{parameters.environment}} ${{ parameters.podName }}:/Test/TestResults ./TestResults/daf-${{ parameters.region }}-${{parameters.environment}}/${{ parameters.podName }}
+      kubectl -n daf-${{ parameters.region }}-${{ parameters.environment }} describe pod/${{ parameters.podName }}
+      kubectl -n daf-${{ parameters.region }}-${{ parameters.environment }} delete pod/${{ parameters.podName }}
+      cat grep.txt | grep -w 'Passed!\|dummy'
