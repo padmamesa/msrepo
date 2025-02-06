@@ -1,0 +1,15 @@
+<configuration name="config-eventlog-example" version="1">
+
+    <job-orchestration>
+        <property name="framework">databricks</property>
+        <property name="timeout">10</property>
+        <property name="template">job-eventlog</property>
+        <property name="engineId">adb-5293849790434684.4.azuredatabricks.net</property>
+    </job-orchestration>
+
+    <job-properties>
+        <property name="common_whl">xmart_common_utils-1.0.1-py3-none-any.whl</property>
+        <property name="eventlog_whl">xmart_eventlog-1.0.0-py3-none-any.whl</property>
+        <property name="silver_script">Silver_Common_Eventlog.py</property>
+    </job-properties>
+</configuration>
